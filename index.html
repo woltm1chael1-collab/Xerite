@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Xəritə · Naviqator</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script>
@@ -557,15 +557,17 @@
   </div>
   <div class="p-body">
     <div class="p-coords" id="pCoords">—</div>
+    <div class="p-coords" id="pPlusCode" title="Klikləyin — kopyalanacaq" style="cursor:pointer;">—</div>
     <div class="act-row">
       <button class="act-btn act-primary" id="gmapsBtn">🗺 Google Maps-da aç</button>
       <button class="act-btn act-secondary" id="gmapsCopyBtn">📋 Google Maps linkini kopyala</button>
       <button class="act-btn act-secondary" id="copyBtn">⧉ Koordinatı kopyala</button>
+      <button class="act-btn act-secondary" id="plusCodeCopyBtn">⧉ Plus Code kopyala</button>
     </div>
   </div>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/google/open-location-code@main/js/src/openlocationcode.js"></script>
 <script>
 function plusCodeFor(lat, lng){
@@ -674,6 +676,7 @@ function openPanel(lat, lng, name, addr, cat, id){
   document.getElementById('pName').textContent = name || 'Seçilmiş nöqtə';
   document.getElementById('pAddr').textContent = addr || '';
   document.getElementById('pCoords').textContent = lat.toFixed(6) + ', ' + lng.toFixed(6);
+  document.getElementById('pPlusCode').textContent = '⊞ ' + plusCodeFor(lat, lng);
   document.getElementById('panel').classList.add('show');
 
   if(activeMarker) map.removeLayer(activeMarker);
@@ -705,6 +708,22 @@ document.getElementById('copyBtn').onclick = () => {
   const b = document.getElementById('copyBtn');
   const old = b.textContent; b.textContent = '✓ Kopyalandı';
   setTimeout(() => b.textContent = old, 1000);
+};
+
+function copyPlusCode(){
+  if(!selected) return;
+  const code = plusCodeFor(selected.lat, selected.lng);
+  navigator.clipboard.writeText(code);
+  const el = document.getElementById('pPlusCode');
+  const old = el.textContent; el.textContent = '✓ Kopyalandı: ' + code;
+  setTimeout(() => el.textContent = old, 1200);
+}
+document.getElementById('pPlusCode').onclick = copyPlusCode;
+document.getElementById('plusCodeCopyBtn').onclick = () => {
+  copyPlusCode();
+  const b = document.getElementById('plusCodeCopyBtn');
+  const old = b.textContent; b.textContent = '✓ Kopyalandı';
+  setTimeout(() => b.textContent = old, 1200);
 };
 
 // ===== reverse geocode =====
